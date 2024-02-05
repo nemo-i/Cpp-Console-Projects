@@ -1,20 +1,93 @@
-// Cpp-Console-Projects.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include <iostream>
+using namespace std;
 
-int main()
-{
-    std::cout << "Hello World!\n";
+std::string AddSpace(short count){
+    std::string space;
+    for (size_t i = 0; i < count; i++)
+    {
+        space += " ";
+    }
+    return space;
+}
+void PrintMainMenuHeader() {
+    std::cout << "=================================" << std::endl;
+    std::cout <<AddSpace(9) << "Main Menu Screen" << AddSpace(9)<< std::endl;
+    std::cout << "=================================" << std::endl;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+void PrintMainMenuOption(short index, std::string title)
+{
+    std::cout <<AddSpace(5)<< "[" << index + 1 << "] " << title << "." << std::endl;
+}
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+
+
+short ReadOption() {
+    std::cout << "Choose what do you want to do? [1 to 6]?";
+    short option;
+    std::cin >> option;
+    return option;
+}
+void Clear() {
+    system("cls");
+}
+
+enum  enOptions
+{
+    Show = 1,
+    Add  = 2,
+    Delete = 3,
+    Update = 4,
+    Find = 5,
+    Exit = 6,
+};
+void ShowMenus(enOptions option)
+{
+    switch (option)
+    {
+    case Show:
+        break;
+    case Add:
+        break;
+    case Delete:
+        break;
+    case Update:
+        break;
+    case Find:
+        break;
+    case Exit:
+        break;
+    default:
+        break;
+    }
+    
+}
+void ShowClientList() {
+
+}
+
+void PrintMainMenu() {
+    Clear();
+    PrintMainMenuHeader();
+    std::string options[6] = {
+    "Show Client List",
+    "Add New Client",
+    "Delete Client",
+    "Update Client",
+    "Find Client",
+    "Exit",
+    };
+    for (size_t i = 0; i < 6; i++)
+    {
+        PrintMainMenuOption(i,options[i]);
+    }
+    std::cout << "=================================" << std::endl;
+   enOptions option = (enOptions) ReadOption();
+   ShowMenus(option);
+}
+int main()
+{
+    PrintMainMenu();
+}
+
