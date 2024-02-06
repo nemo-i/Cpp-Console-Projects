@@ -66,7 +66,7 @@ std::string DrawLine(short count)
     return line;
 }
 
-void DrawClientRow(sClient client)
+void DrawClientRow(sClient &client)
 {
     std::cout << "|"<<std::setw(15) << client.accountNumber << "|" << std::setw(15) << client.pinCode << "|" << std::setw(28) << client.name <<"|" << std::setw(15) << client.phone << "|" << std::setw(15) << client.balance <<"|"<< std::endl;
 }
@@ -115,53 +115,113 @@ std::vector<std::string> SplitRecord(std::string record, std::string separator)
     return values;
 }
 
-//sClient ConvertRecordToClient(std::string record)
-//{
-//
-//    return;
-//}
+sClient ConvertRecordToClient(std::string record,std::string separator)
+{
+    sClient client;
+    std::vector<std::string> values = SplitRecord(record,separator);
+    client.accountNumber = values[0];
+    client.pinCode = values[1];
+    client.name = values[2];
+    client.phone = values[3];
+    client.balance = stod(values[4]);
 
-//std::vector<sClient> ReadRecordFromFile(std::string fileName = "Clients.txt")
-//{
-//    std::fstream file;
-//    std::string record;
-//    file.open(fileName, ios::in);
-//    if (file.is_open())
-//    {
-//        while (getline(file, record))
-//        {
-//
-//        }
-//        file.close();
-//    }
-//    return;
-//}
+    return client;
+}
 
-void ShowClientList() {
-    sClient client = {
-    "A5100",
-    "2356",
-    "Hisham",
-    "0106982",
-    200.000
-    };
+std::vector<sClient> ReadClientsFromFile(std::string fileName = "Clients.txt")
+{
+    std::fstream file;
+    std::string record;
+    std::vector<sClient> clients;
+    sClient client;
+    file.open(fileName, ios::in);
+    if (file.is_open())
+    {
+        while (getline(file, record))
+        {
+           client =  ConvertRecordToClient(record,"#//#");
+           clients.push_back(client);
+        }
+        file.close();
+    }
+    return clients;
+}
+
+void ShowClientList(std::vector<sClient> clients) {
+   
     Clear();
-    DrawClientListHeader(6);
-    DrawClientRow(client);
+    DrawClientListHeader(clients.size());
+    for (auto& i : clients)
+    {
+        DrawClientRow(i);
+    }
     std::cout << DrawLine(100) << std::endl;
     std::cout << "Press any key to go to main menu..." << std::endl;
     system("pause");
-    
     PrintMainMenu();
+}
+
+void DrawAddNewClientHeader() {
+    std::cout<<DrawLine(50)<<std::endl;
+    std::cout << AddSpace(15) << "Add New Client Screen" << AddSpace(15) << std::endl;
+    std::cout<<DrawLine(50)<<std::endl;
+}
+
+sClient ReadClientFromUser(std::vector<sClient> clients) {
+    sClient client;
+    bool addMore;
+    std::cout << "Enter Account Number? ";
+    getline(cin >> ws, client.accountNumber);
+    for (sClient& i : clients)
+    {
+        if (i.accountNumber == client.accountNumber) {
+            std::cout << "Client with [" << i.accountNumber << "] " << "already exits, ";
+            std::cout << "Enter Another Account Number? ";
+            getline(cin >> ws, client.accountNumber);
+            break;
+        }
+    }
+    std::cout << "Enter PinCode? ";
+    getline(cin , client.pinCode);
+    std::cout << "Enter Client Name? ";
+    getline(cin , client.name);
+    std::cout << "Enter Client Phone? ";
+    getline(cin , client.phone);
+    std::cout << "Enter Client Balance?";
+    cin >> client.balance;
+    return client;
+}
+void DrawAddNewClientScreen(std::vector<sClient> &clients) {
+    sClient client;
+    std::string record;
+    std::string addMore;
+    Clear();
+    DrawAddNewClientHeader();
+    std::cout << "Adding New Client:" << std::endl;
+    do
+    {
+        client = ReadClientFromUser(clients);
+        record = ConvertClientToRecord(client);
+        SaveRecordToFile(record);
+        clients.push_back(client);
+        std::cout << "Client Added Successfully, do you want to add more clients? Y/N? ";
+        cin >> addMore;
+    } while (addMore == "y");
+    std::cout << "Press any key to go to main menu..." << std::endl;
+    system("pause>nul");
+    PrintMainMenu();
+    
 }
 void ShowMenus(enOptions option)
 {
+    std::vector<sClient> clients = ReadClientsFromFile("Clients.txt");
     switch (option)
     {
     case Show:
-        ShowClientList();
+        ShowClientList(clients);
         break;
     case Add:
+        DrawAddNewClientScreen(clients);
         break;
     case Delete:
         break;
@@ -205,12 +265,14 @@ int main()
     "010892",
      80.000
     };
-   std::vector<std::string> values = SplitRecord("Hisham#//#Ahmed#//#Ali#//#Mahar#//#","#//#");
+  /* std::vector<std::string> values = SplitRecord("Hisham#//#Ahmed#//#Ali#//#Mahar#//#","#//#");
    for (auto& i : values)
    {
        std::cout << i << endl;
-   }
+   }*/
+   
+  
    // SaveRecordToFile(ConvertClientToRecord(client));
-  //  PrintMainMenu();
+   PrintMainMenu();
 }
 
