@@ -1,10 +1,4 @@
-#pragma once
-#include "GraphicLib.h"
-#include <vector>
-#include "VarLib.h"
-#include "IOLib.h"
-#include "DatabaseLib.h"
-#include "MainMenu.h"
+
 
 namespace DeleteClientScreen {
     void DrawDeleteClientHeader() {

@@ -1,9 +1,20 @@
 #pragma once
-#include "VarLib.h"
-#include "GraphicLib.h"
+#include <iostream>
+#include <vector>
+#include <string>
 #include <iomanip>
+#include <fstream>
+#include "DatabaseLib.h"
+#include "GraphicLib.h"
+#include "IOLib.h"
+#include "VarLib.h"
 #include <vector>
 #include "MainMenu.h"
+#include "ClientListScreen.h"
+#include "AddNewClientScreen.h"
+#include "DeleteClientScreen.h"
+#include "UpdateScreen.h"
+using namespace std;
 namespace ClientListScreen {
     void DrawClientRow(VarLib::sClient& client) {
         std::cout << "|" << std::setw(15) << client.accountNumber << "|" << std::setw(15) << client.pinCode << "|" << std::setw(28) << client.name << "|" << std::setw(15) << client.phone << "|" << std::setw(15) << client.balance << "|" << std::endl;

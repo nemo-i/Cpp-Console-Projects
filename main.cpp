@@ -1,5 +1,4 @@
-#include "MainMenu.h"
-#include <iostream>
+#include "Imports.h"
 int main()
 {
 	MainMenu::PrintMainMenu();

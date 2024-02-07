@@ -1,9 +1,5 @@
 #pragma once
-#include <vector>
-#include "VarLib.h"
-#include "GraphicLib.h"
-#include "IOLib.h"
-#include "MainMenu.h"
+#include "Imports.h"
 namespace AddNewClientScreen {
 
     void DrawAddNewClientHeader() {

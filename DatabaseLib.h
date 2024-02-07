@@ -1,11 +1,5 @@
 #pragma once
-#include "VarLib.h"
-#include <vector>
-#include "IOLib.h"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include "GraphicLib.h"
+#include "Imports.h"
 namespace DatabaseLib {
     void SaveRecordToFile(std::string record, std::string fileName = "Clients.txt")
     {

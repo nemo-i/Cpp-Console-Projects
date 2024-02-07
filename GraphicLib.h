@@ -1,7 +1,5 @@
 #pragma once
-#include<iostream>
-#include<string>
-#include "VarLib.h"
+#include "Imports.h"
 namespace GraphicLib {
    
  
