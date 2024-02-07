@@ -27,6 +27,7 @@ void DrawClientInfoCard(sClient& client);
 void DrawClientDeleteScreen(std::vector<sClient>& clients);
 void DrawMainMenu();
 void DrawClientUpdateScreen(std::vector<sClient>& clients);
+void DrawFindClientScreen(vector<sClient> clients);
 string ConvertClientToRecord(sClient client,string sep = "#//#") {
 	string record;
 	record += client.name + sep;
@@ -363,6 +364,7 @@ void ShowMenus(enOptions option)
 		DrawClientUpdateScreen(clients);
 		break;
 	case Find:
+		DrawFindClientScreen(clients);
 		break;
 	case Exit:
 		return;
@@ -477,13 +479,41 @@ void DrawUpdateScreenClientHeader() {
 
 void DrawClientUpdateScreen(std::vector<sClient>& clients) {
 	Clear();
-	std::string accountNumber;
-	sClient client;
-	char updateClient;
 	DrawUpdateScreenClientHeader();
 	UpdateClientAndSaveToDatabase(clients);
 }
+void DrawFindClientScreenHeader() {
+	DrawLine(50);
+	std::cout << AddSpace(15) << "Find Client Screen" << AddSpace(15) << std::endl;
+	DrawLine(50);
+}
 
+void FindClient(vector<sClient> clients) {
+	sClient client;
+	string accountNumber;
+	cout << "Enter Client Account Number? ";
+	cin >> accountNumber;
+	char sure;
+	bool found = FindClientByAccountNumber(clients, accountNumber, client);
+	if (found) {
+		DrawClientInfoCard(client);
+		cout << "Press any key to go to main menu\n";
+		system("pause>nul");
+		DrawMainMenu();
+	}
+	else
+	{
+		cout << "Client With Account Number [" << accountNumber << "] Not Found\n";
+		cout << "Press any key to go to main menu\n";
+		system("pause>nul");
+		DrawMainMenu();
+	}
+}
+void DrawFindClientScreen(vector<sClient> clients) {
+	Clear();
+	DrawFindClientScreenHeader();
+	FindClient(clients);
+}
 
 int main() {
 	sClient client1{
