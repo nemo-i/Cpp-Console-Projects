@@ -544,14 +544,14 @@ int main() {
 	//UpdateClient(clients,newClient);
 
 	//DeleteClient(clients);
-clients =ReadClientsFromDatabase();
-//for (auto& i : clients)
-//{
-//	cout << i.name << endl;
-//}
+	clients =ReadClientsFromDatabase();
+	//for (auto& i : clients)
+	//{
+	//	cout << i.name << endl;
+	//}
 	//ReadAndAddClientToClientListAndDatabase();
 	//UpdateClientAndSaveToDatabase(clients);
-//DeleteClientAndSaveToDatabase(clients);
-DrawMainMenu();
+	//DeleteClientAndSaveToDatabase(clients);
+	DrawMainMenu();
 	return 0;
 }
