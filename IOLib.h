@@ -59,4 +59,28 @@ namespace IOLib {
         }
         return clients;
     }
+    VarLib::sClient ReadClientFromUser(std::vector<VarLib::sClient> clients) {
+        VarLib::sClient client;
+        bool addMore;
+        std::cout << "Enter Account Number? ";
+        getline(cin >> ws, client.accountNumber);
+        for (VarLib::sClient& i : clients)
+        {
+            if (i.accountNumber == client.accountNumber) {
+                std::cout << "Client with [" << i.accountNumber << "] " << "already exits, ";
+                std::cout << "Enter Another Account Number? ";
+                getline(cin >> ws, client.accountNumber);
+                break;
+            }
+        }
+        std::cout << "Enter PinCode? ";
+        getline(cin, client.pinCode);
+        std::cout << "Enter Client Name? ";
+        getline(cin, client.name);
+        std::cout << "Enter Client Phone? ";
+        getline(cin, client.phone);
+        std::cout << "Enter Client Balance?";
+        cin >> client.balance;
+        return client;
+    }
 }

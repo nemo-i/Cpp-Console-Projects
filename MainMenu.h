@@ -1,8 +1,21 @@
 #pragma once
-#include "imports.h"
+#include "IOLib.h"
 #include "Menus.h"
+#include "GraphicLib.h"
+#include "ClientListScreen.h"
+#include "AddNewClientScreen.h"
+#include "DeleteClientScreen.h"
+#include "UpdateScreen.h"
 namespace MainMenu {
-
+    void DrawMainMenuHeader() {
+        std::cout << "=================================" << std::endl;
+        std::cout <<GraphicLib::AddSpace(9) << "Main Menu Screen" << GraphicLib::AddSpace(9) << std::endl;
+        std::cout << "=================================" << std::endl;
+    }
+    void DrawMainMenuOption(short index, std::string title)
+    {
+        std::cout << GraphicLib::AddSpace(5) << "[" << index + 1 << "] " << title << "." << std::endl;
+    }
     std::string options[6] = {
        "Show Client List",
        "Add New Client",
@@ -15,7 +28,7 @@ namespace MainMenu {
     void DrawOptions() {
         for (size_t i = 0; i < 6; i++)
         {
-            GraphicLib::DrawMainMenuOption(i, options[i]);
+           DrawMainMenuOption(i, options[i]);
         }
     }
     void ShowMenus(VarLib::enOptions option)
@@ -24,16 +37,16 @@ namespace MainMenu {
         switch (option)
         {
         case VarLib::Show:
-            Menus::ShowClientList(clients);
+            ClientListScreen::ShowClientList(clients);
             break;
         case VarLib::Add:
-            Menus::DrawAddNewClientScreen(clients);
+            AddNewClientScreen::DrawAddNewClientScreen(clients);
             break;
         case VarLib::Delete:
-            Menus::DrawClientDeleteScreen(clients);
+            DeleteClientScreen::DrawClientDeleteScreen(clients);
             break;
         case VarLib::Update:
-            Menus::DrawClientUpdateScreen(clients);
+            ClientUpdateScreen::DrawClientUpdateScreen(clients);
             break;
         case VarLib::Find:
             break;
@@ -46,7 +59,7 @@ namespace MainMenu {
 
     void PrintMainMenu() {
         GraphicLib::Clear();
-        GraphicLib::DrawMainMenuHeader();
+        DrawMainMenuHeader();
         DrawOptions();
         std::cout << "=================================" << std::endl;
         VarLib:: enOptions option = (VarLib::enOptions)IOLib::ReadOption();
