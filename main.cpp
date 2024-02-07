@@ -26,6 +26,7 @@ void DrawAddNewClientScreen(std::vector<sClient>& clients);
 void DrawClientInfoCard(sClient& client);
 void DrawClientDeleteScreen(std::vector<sClient>& clients);
 void DrawMainMenu();
+void DrawClientUpdateScreen(std::vector<sClient>& clients);
 string ConvertClientToRecord(sClient client,string sep = "#//#") {
 	string record;
 	record += client.name + sep;
@@ -249,6 +250,7 @@ void UpdateClientAndSaveToDatabase(vector<sClient> clients) {
 	char sure;
 	bool found =FindClientByAccountNumber(clients, accountNumber, client);
 	if (found) {
+		DrawClientInfoCard(client);
 		cout << "Are you sure want to update this client Y/N? ";
 		cin >> sure;
 		if (sure == 'Y' || sure == 'y') {
@@ -258,11 +260,13 @@ void UpdateClientAndSaveToDatabase(vector<sClient> clients) {
 			cout << "Client Updated Successfully!\n";
 			cout << "Press any key to go to main menu... ";
 			system("pause>nul");
+			DrawMainMenu();
 		}
 		else
 		{
 			cout << "Press any key to go to main menu... ";
 			system("pause>nul");
+			DrawMainMenu();
 		}
 	}
 	else
@@ -270,6 +274,7 @@ void UpdateClientAndSaveToDatabase(vector<sClient> clients) {
 		cout << "Client not found\n";
 		cout << "Press any key to go to main menu... ";
 		system("pause>nul");
+		DrawMainMenu();
 	}
 }
 
@@ -355,12 +360,15 @@ void ShowMenus(enOptions option)
 		DrawClientDeleteScreen(clients);
 		break;
 	case Update:
+		DrawClientUpdateScreen(clients);
 		break;
 	case Find:
 		break;
 	case Exit:
+		return;
 		break;
 	default:
+		return;
 		break;
 	}
 }
@@ -460,6 +468,20 @@ void DrawClientDeleteScreen(std::vector<sClient>& clients) {
 	char deleteClient;
 	DrawDeleteClientHeader();
 	DeleteClientAndSaveToDatabase(clients);
+}
+void DrawUpdateScreenClientHeader() {
+	DrawLine(50);
+	std::cout << AddSpace(15) << "Update Client Info Screen" << AddSpace(15) << std::endl;
+	DrawLine(50);
+}
+
+void DrawClientUpdateScreen(std::vector<sClient>& clients) {
+	Clear();
+	std::string accountNumber;
+	sClient client;
+	char updateClient;
+	DrawUpdateScreenClientHeader();
+	UpdateClientAndSaveToDatabase(clients);
 }
 
 
