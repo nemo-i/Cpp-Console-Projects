@@ -58,13 +58,23 @@ bool FindClientByAccountNumber(vector<sClient>& clients,string accountNumber ,sC
 	return false;
 }
 
-sClient MarkClientForUpdate(sClient client) {
-	client.isMarkForUpdate = true;
+sClient MarkClientForUpdate(vector<sClient> &clients,sClient &client) {
+	for (auto& i : clients)
+	{
+		if (client.accountNumber == i.accountNumber) {
+			i.isMarkForUpdate = true;
+		}
+	}
 	return client;
 }
 
-sClient MarkClientForDelete(sClient client) {
-	client.isMarkForDelete = true;
+sClient MarkClientForDelete(vector<sClient>& clients, sClient& client) {
+	for (auto& i : clients)
+	{
+		if (client.accountNumber == i.accountNumber) {
+			i.isMarkForDelete = true;
+		}
+	}
 	return client;
 }
 
@@ -129,12 +139,18 @@ vector<sClient> ReadClientsFromDatabase(string fileName = "Clients.txt") {
 	file.open(fileName,ios::in);
 	string record;
 	vector<sClient> clients;
-	while (getline(file,record))
+	while (file.is_open())
 	{
-		vector<string> clientData =SplitRecord(record);
-		sClient client = ConvertClientDataToClient(clientData);
-		clients.push_back(client);
+		while (getline(file, record))
+		{
+			vector<string> clientData = SplitRecord(record);
+			sClient client = ConvertClientDataToClient(clientData);
+			clients.push_back(client);
+
+		}
+		file.close();
 	}
+	
 	return clients;
 }
 
@@ -142,7 +158,7 @@ vector<sClient> ReadClientsFromDatabase(string fileName = "Clients.txt") {
 void WriteClientsToDatabase(vector<sClient>& clients, string fileName = "Clients.txt")
 {
 	fstream file;
-	file.open(fileName, ios::out | ios::app);
+	file.open(fileName, ios::out);
 	while (file.is_open())
 	{
 		for (auto& i : clients) {
@@ -153,6 +169,126 @@ void WriteClientsToDatabase(vector<sClient>& clients, string fileName = "Clients
 	}
 }
 
+void WriteClientToDatabase(sClient& client, string fileName = "Clients.txt") {
+	fstream file;
+	file.open(fileName, ios::out|ios::app);
+	while (file.is_open())
+	{
+		
+			string record = ConvertClientToRecord(client);
+			file << record << endl;
+		
+		file.close();
+	}
+}
+
+sClient ReadClientFromUserWithoutAccountNumber(sClient &client) {
+	sClient iclient;
+	cout << "Enter Client Name? ";
+	getline(cin>>ws, client.name);
+	cout << "Enter PinCode? ";
+	cin >> client.pincode;
+	cout << "Enter Client Balance? ";
+	cin >> client.balance;
+	return iclient;
+}
+
+void ReadClientFromUserWithAccountNumber(vector<sClient> &clients,sClient &client) {
+	
+	string accountNumber;
+	cout << "Enter Client Account Number? ";
+	getline(cin>>ws,accountNumber);
+	if (FindClientByAccountNumber(clients, accountNumber, client)) {
+		cout << "Client With Account Number [" << client.accountNumber << "] Already Exits\n";
+		return;
+	}
+	else
+	{
+		client = ReadClientFromUserWithoutAccountNumber(client);
+		client.accountNumber = accountNumber;
+		return;
+	}
+}
+
+
+
+void ReadAndAddClientToClientListAndDatabase() {
+	vector<sClient> clients = ReadClientsFromDatabase();
+	char addMore;
+	sClient client;
+
+	do
+	{
+		ReadClientFromUserWithAccountNumber(clients,client);
+		WriteClientToDatabase(client);
+		cout << "Are you want to add more clients Y/N? ";
+		cin >> addMore;
+	} while (addMore =='Y' || addMore == 'y');
+}
+
+
+void UpdateClientAndSaveToDatabase(vector<sClient> clients) {
+	string accountNumber;
+	cout << "Enter Client Account Number? ";
+	cin >> accountNumber;
+	sClient client;
+	char sure;
+	bool found =FindClientByAccountNumber(clients, accountNumber, client);
+	if (found) {
+		cout << "Are you sure want to update this client Y/N? ";
+		cin >> sure;
+		if (sure == 'Y' || sure == 'y') {
+			MarkClientForUpdate(clients, client);
+			ReadClientFromUserWithoutAccountNumber(client);
+			UpdateClient(clients, client);
+			cout << "Client Updated Successfully!\n";
+			cout << "Press any key to go to main menu... ";
+			system("pause>nul");
+		}
+		else
+		{
+			cout << "Press any key to go to main menu... ";
+			system("pause>nul");
+		}
+	}
+	else
+	{
+		cout << "Client not found\n";
+		cout << "Press any key to go to main menu... ";
+		system("pause>nul");
+	}
+}
+
+void DeleteClientAndSaveToDatabase(vector<sClient> clients) {
+	string accountNumber;
+	cout << "Enter Client Account Number? ";
+	cin >> accountNumber;
+	sClient client;
+	char sure;
+	bool found = FindClientByAccountNumber(clients, accountNumber, client);
+	if (found) {
+		cout << "Are you sure want to delete this client Y/N? ";
+		cin >> sure;
+		if (sure == 'Y' || sure == 'y') {
+			MarkClientForDelete(clients, client);
+			DeleteClient(clients);
+			cout << "Client Deleted Successfully!\n";
+			cout << "Press any key to go to main menu... ";
+			system("pause>nul");
+		}
+		else
+		{
+			cout << "Press any key to go to main menu... ";
+			system("pause>nul");
+		}
+	}
+	else
+	{
+		cout << "Client not found\n";
+		cout << "Press any key to go to main menu... ";
+		system("pause>nul");
+	}
+}
 
 
 
@@ -184,6 +320,14 @@ int main() {
 	//WriteClientsToDatabase(clients);
 	//UpdateClient(clients,newClient);
 
-	DeleteClient(clients);
+	//DeleteClient(clients);
+clients =ReadClientsFromDatabase();
+//for (auto& i : clients)
+//{
+//	cout << i.name << endl;
+//}
+	//ReadAndAddClientToClientListAndDatabase();
+	//UpdateClientAndSaveToDatabase(clients);
+DeleteClientAndSaveToDatabase(clients);
 	return 0;
 }
