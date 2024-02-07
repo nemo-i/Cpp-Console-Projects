@@ -302,6 +302,7 @@ void AddClientsToDatabase(std::vector<sClient>&clients, std::string fileName = "
 }
 void DeleteClientFromDatabase(std::vector<sClient>& clients, sClient client)
 {
+    
     AddClientAfterClearDatabase(clients);
 }
 
