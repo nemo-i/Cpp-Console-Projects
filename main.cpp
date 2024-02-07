@@ -6,7 +6,7 @@
 #include <fstream>
 using namespace std;
 void PrintMainMenu();
-std::string AddSpace(short count){
+std::string AddSpace(short count) {
     std::string space;
     for (size_t i = 0; i < count; i++)
     {
@@ -16,13 +16,13 @@ std::string AddSpace(short count){
 }
 void PrintMainMenuHeader() {
     std::cout << "=================================" << std::endl;
-    std::cout <<AddSpace(9) << "Main Menu Screen" << AddSpace(9)<< std::endl;
+    std::cout << AddSpace(9) << "Main Menu Screen" << AddSpace(9) << std::endl;
     std::cout << "=================================" << std::endl;
 }
 
 void PrintMainMenuOption(short index, std::string title)
 {
-    std::cout <<AddSpace(5)<< "[" << index + 1 << "] " << title << "." << std::endl;
+    std::cout << AddSpace(5) << "[" << index + 1 << "] " << title << "." << std::endl;
 }
 
 
@@ -40,7 +40,7 @@ void Clear() {
 enum  enOptions
 {
     Show = 1,
-    Add  = 2,
+    Add = 2,
     Delete = 3,
     Update = 4,
     Find = 5,
@@ -56,6 +56,7 @@ struct sClient
     std::string phone;
     double balance;
     bool markForDelete = false;
+    bool markForUpdate = false;
 };
 std::string DrawLine(short count)
 {
@@ -67,16 +68,16 @@ std::string DrawLine(short count)
     return line;
 }
 
-void DrawClientRow(sClient &client)
+void DrawClientRow(sClient& client)
 {
-    std::cout << "|"<<std::setw(15) << client.accountNumber << "|" << std::setw(15) << client.pinCode << "|" << std::setw(28) << client.name <<"|" << std::setw(15) << client.phone << "|" << std::setw(15) << client.balance <<"|"<< std::endl;
+    std::cout << "|" << std::setw(15) << client.accountNumber << "|" << std::setw(15) << client.pinCode << "|" << std::setw(28) << client.name << "|" << std::setw(15) << client.phone << "|" << std::setw(15) << client.balance << "|" << std::endl;
 }
-std::string ConvertClientToRecord(sClient& client, std:: string sepatrator = "#//#")
+std::string ConvertClientToRecord(sClient& client, std::string sepatrator = "#//#")
 {
     return client.accountNumber + sepatrator + client.pinCode + sepatrator + client.name + sepatrator + client.phone + sepatrator + to_string(client.balance);
 }
 
-void SaveRecordToFile( std::string record, std::string fileName = "Clients.txt")
+void SaveRecordToFile(std::string record, std::string fileName = "Clients.txt")
 {
     std::fstream file;
     file.open(fileName, ios::out | ios::app);
@@ -84,7 +85,7 @@ void SaveRecordToFile( std::string record, std::string fileName = "Clients.txt")
     {
         file << record + "\n";
         file.close();
-    }   
+    }
 }
 void DrawClientListHeader(short clients)
 {
@@ -92,33 +93,33 @@ void DrawClientListHeader(short clients)
     std::cout << DrawLine(100) << std::endl;
     std::cout << AddSpace(30) << "Client List (" << clients << ") Client(s)." << AddSpace(10) << std::endl;
     std::cout << DrawLine(100) << std::endl;
-    std::cout << "|" << std::setw(15) << "Account Number" << "|" << std::setw(15) << "Pin Code" << "|" << std::setw(28) << "Client Name" << "|" << std::setw(15) << "Phone" << "|" << std::setw(15) << "Balance" <<"|" << std::endl;
+    std::cout << "|" << std::setw(15) << "Account Number" << "|" << std::setw(15) << "Pin Code" << "|" << std::setw(28) << "Client Name" << "|" << std::setw(15) << "Phone" << "|" << std::setw(15) << "Balance" << "|" << std::endl;
     std::cout << DrawLine(100) << std::endl;
-    
+
 }
 std::vector<std::string> SplitRecord(std::string record, std::string separator)
 {
     std::vector<std::string> values;
     bool showSeparator = false;
     std::string recordv;
-    short pos ;
+    short pos;
     do
     {
         pos = record.find(separator);
         recordv = record.substr(0, pos);
         values.push_back(recordv);
-        record.erase(0,pos+separator.length());
-    } while (pos!=-1);
-    
-        
+        record.erase(0, pos + separator.length());
+    } while (pos != -1);
+
+
 
     return values;
 }
 
-sClient ConvertRecordToClient(std::string record,std::string separator)
+sClient ConvertRecordToClient(std::string record, std::string separator)
 {
     sClient client;
-    std::vector<std::string> values = SplitRecord(record,separator);
+    std::vector<std::string> values = SplitRecord(record, separator);
     client.accountNumber = values[0];
     client.pinCode = values[1];
     client.name = values[2];
@@ -139,8 +140,8 @@ std::vector<sClient> ReadClientsFromFile(std::string fileName = "Clients.txt")
     {
         while (getline(file, record))
         {
-           client =  ConvertRecordToClient(record,"#//#");
-           clients.push_back(client);
+            client = ConvertRecordToClient(record, "#//#");
+            clients.push_back(client);
         }
         file.close();
     }
@@ -148,7 +149,7 @@ std::vector<sClient> ReadClientsFromFile(std::string fileName = "Clients.txt")
 }
 
 void ShowClientList(std::vector<sClient> clients) {
-   
+
     Clear();
     DrawClientListHeader(clients.size());
     for (auto& i : clients)
@@ -162,9 +163,9 @@ void ShowClientList(std::vector<sClient> clients) {
 }
 
 void DrawAddNewClientHeader() {
-    std::cout<<DrawLine(50)<<std::endl;
+    std::cout << DrawLine(50) << std::endl;
     std::cout << AddSpace(15) << "Add New Client Screen" << AddSpace(15) << std::endl;
-    std::cout<<DrawLine(50)<<std::endl;
+    std::cout << DrawLine(50) << std::endl;
 }
 
 sClient ReadClientFromUser(std::vector<sClient> clients) {
@@ -182,16 +183,16 @@ sClient ReadClientFromUser(std::vector<sClient> clients) {
         }
     }
     std::cout << "Enter PinCode? ";
-    getline(cin , client.pinCode);
+    getline(cin, client.pinCode);
     std::cout << "Enter Client Name? ";
-    getline(cin , client.name);
+    getline(cin, client.name);
     std::cout << "Enter Client Phone? ";
-    getline(cin , client.phone);
+    getline(cin, client.phone);
     std::cout << "Enter Client Balance?";
     cin >> client.balance;
     return client;
 }
-void DrawAddNewClientScreen(std::vector<sClient> &clients) {
+void DrawAddNewClientScreen(std::vector<sClient>& clients) {
     sClient client;
     std::string record;
     std::string addMore;
@@ -210,7 +211,7 @@ void DrawAddNewClientScreen(std::vector<sClient> &clients) {
     std::cout << "Press any key to go to main menu..." << std::endl;
     system("pause>nul");
     PrintMainMenu();
-    
+
 }
 
 void DrawDeleteClientHeader() {
@@ -219,23 +220,28 @@ void DrawDeleteClientHeader() {
     std::cout << DrawLine(50) << std::endl;
 }
 
-bool IsClientExits(std::string accountNumber,std::vector<sClient> clients,sClient &client,bool markForDelete= false)
+bool IsClientExits(std::string accountNumber, std::vector<sClient> clients, sClient& client, bool markForDelete = false, bool markForUpdate)
 {
     for (auto& i : clients)
     {
         if (accountNumber == i.accountNumber) {
             if (markForDelete) {
                 i.markForDelete = true;
+
             }
+            if (markForUpdate) {
+                i.markForUpdate = true;
+            }
+
             client = i;
             return true;
         }
-        
+
     }
     return false;
 }
-void DrawClientInfoCard(sClient &client) {
-    std::cout << "The following are the client details:"<<std::endl;
+void DrawClientInfoCard(sClient& client) {
+    std::cout << "The following are the client details:" << std::endl;
     std::cout << DrawLine(35) << std::endl;
     std::cout << "Account Number:" << client.accountNumber << std::endl;
     std::cout << "Pin Code      :" << client.pinCode << std::endl;
@@ -279,7 +285,7 @@ void AddClientAfterClearDatabase(std::vector<sClient>& clients, std::string file
     }
 }
 
-void AddClientsToDatabase(std::vector<sClient>&clients, std::string fileName = "Clients.txt")
+void AddClientsToDatabase(std::vector<sClient>& clients, std::string fileName = "Clients.txt")
 {
     std::string record;
     fstream file;
@@ -287,7 +293,7 @@ void AddClientsToDatabase(std::vector<sClient>&clients, std::string fileName = "
     while (file.is_open())
     {
 
-        
+
 
         for (auto& i : clients)
         {
@@ -298,15 +304,16 @@ void AddClientsToDatabase(std::vector<sClient>&clients, std::string fileName = "
         }
         file.close();
     }
-   
+
 }
 void DeleteClientFromDatabase(std::vector<sClient>& clients, sClient client)
 {
+
     AddClientAfterClearDatabase(clients);
 }
 
 
-void DrawClientDeleteScreen(std::vector<sClient> &clients) {
+void DrawClientDeleteScreen(std::vector<sClient>& clients) {
     Clear();
     std::string accountNumber;
     sClient client;
@@ -314,10 +321,10 @@ void DrawClientDeleteScreen(std::vector<sClient> &clients) {
     DrawDeleteClientHeader();
     std::cout << "Please enter Account Number? ";
     cin >> accountNumber;
-    bool isClientExits = IsClientExits(accountNumber, clients, client,true);
+    bool isClientExits = IsClientExits(accountNumber, clients, client, true, false);
     if (!isClientExits) {
-        std::cout << "Client with Account Number (" << accountNumber << ") is Not Found!"<<std::endl;
-        std::cout << "Press any key to go back to main Menue..";    
+        std::cout << "Client with Account Number (" << accountNumber << ") is Not Found!" << std::endl;
+        std::cout << "Press any key to go back to main Menue..";
     }
     else
     {
@@ -325,13 +332,73 @@ void DrawClientDeleteScreen(std::vector<sClient> &clients) {
         std::cout << "\n\n\n";
         std::cout << "Are you sure you want delete this client? y/n ";
         std::cin >> deleteClient;
-        if (deleteClient == 'y'||deleteClient=='Y') {
-            DeleteClientFromDatabase(clients,client);
+        if (deleteClient == 'y' || deleteClient == 'Y') {
+            DeleteClientFromDatabase(clients, client);
             std::cout << "Client deleted successfully";
             system("pause>nul");
             PrintMainMenu();
         }
     }
+    system("pause>nul");
+    PrintMainMenu();
+}
+
+void UpdateClientsToDatabase(std::vector<sClient>& clients, sClient client, std::string fileName = "Clients.txt") {
+    std::string record;
+    fstream file;
+    file.open(fileName, ios::out);
+    while (file.is_open())
+    {
+
+
+
+        for (auto& i : clients)
+        {
+            if (!i.markForUpdate) {
+                record = ConvertClientToRecord(i);
+                file << record;
+            }
+            else
+            {
+                record = ConvertClientToRecord(client);
+                file << record;
+            }
+        }
+        file.close();
+    }
+}
+
+
+void UpadateClientScreen(std::vector<sClient>& clients) {
+    Clear();
+    std::string accountNumber;
+    sClient client;
+    char updateClient;
+    std::cout << DrawLine(50) << std::endl;
+    std::cout << AddSpace(15) << "Update Client Screen" << AddSpace(15) << std::endl;
+    std::cout << DrawLine(50) << std::endl;
+    std::cout << "Please enter Account Number? ";
+    cin >> accountNumber;
+    bool isClientExits = IsClientExits(accountNumber, clients, client, false, true);
+    if (!isClientExits) {
+        std::cout << "Client with Account Number (" << accountNumber << ") is Not Found!" << std::endl;
+        std::cout << "Press any key to go back to main Menue..";
+    }
+    else
+    {
+        DrawClientInfoCard(client);
+        std::cout << "\n\n\n";
+        std::cout << "Are you sure you want update this client? y/n ";
+        std::cin >> updateClient;
+        if (updateClient == 'y' || updateClient == 'Y') {
+            UpdateClientsToDatabase(clients, client);
+            std::cout << "Client updated successfully";
+            std::cout << "Press any key to go back to main Menue..";
+            system("pause>nul");
+            PrintMainMenu();
+        }
+    }
+    std::cout << "Press any key to go back to main Menue..";
     system("pause>nul");
     PrintMainMenu();
 }
@@ -350,6 +417,7 @@ void ShowMenus(enOptions option)
         DrawClientDeleteScreen(clients);
         break;
     case Update:
+        UpadateClientScreen(clients);
         break;
     case Find:
         break;
@@ -374,11 +442,11 @@ void PrintMainMenu() {
     };
     for (size_t i = 0; i < 6; i++)
     {
-        PrintMainMenuOption(i,options[i]);
+        PrintMainMenuOption(i, options[i]);
     }
     std::cout << "=================================" << std::endl;
-   enOptions option = (enOptions) ReadOption();
-   ShowMenus(option);
+    enOptions option = (enOptions)ReadOption();
+    ShowMenus(option);
 }
 int main()
 {
@@ -389,14 +457,13 @@ int main()
     "010892",
      80.000
     };
-  /* std::vector<std::string> values = SplitRecord("Hisham#//#Ahmed#//#Ali#//#Mahar#//#","#//#");
-   for (auto& i : values)
-   {
-       std::cout << i << endl;
-   }*/
-   
-  
-   // SaveRecordToFile(ConvertClientToRecord(client));
-   PrintMainMenu();
-}
+    /* std::vector<std::string> values = SplitRecord("Hisham#//#Ahmed#//#Ali#//#Mahar#//#","#//#");
+     for (auto& i : values)
+     {
+         std::cout << i << endl;
+     }*/
 
+
+     // SaveRecordToFile(ConvertClientToRecord(client));
+    PrintMainMenu();
+}

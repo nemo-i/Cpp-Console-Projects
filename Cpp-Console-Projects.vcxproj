@@ -130,19 +130,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AddNewClientScreen.h" />
-    <ClInclude Include="ClientListScreen.h" />
-    <ClInclude Include="DatabaseLib.h" />
-    <ClInclude Include="DeleteClientScreen.h" />
-    <ClInclude Include="GraphicLib.h" />
-    <ClInclude Include="Imports.h" />
-    <ClInclude Include="IOLib.h" />
-    <ClInclude Include="MainMenu.h" />
-    <ClInclude Include="Menus.h" />
-    <ClInclude Include="UpdateScreen.h" />
-    <ClInclude Include="VarLib.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
