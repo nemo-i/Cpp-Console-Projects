@@ -4,6 +4,7 @@ using namespace std;
 #include <vector>
 #include <fstream>
 #include <iomanip>
+#include <math.h>
 struct  sClient
 {
 	string name;
@@ -19,15 +20,22 @@ enum enOptions {
 	Delete = 3,
 	Update = 4,
 	Find = 5,
-	Exit = 6,
+	Transction = 6,
+	Exit = 7,
 };
-void ShowClientList(vector<sClient> clients);
+void Clear();
+void ShowClientList(vector<sClient> clients, bool showTotalBalance);
 void DrawAddNewClientScreen(std::vector<sClient>& clients);
 void DrawClientInfoCard(sClient& client);
 void DrawClientDeleteScreen(std::vector<sClient>& clients);
 void DrawMainMenu();
 void DrawClientUpdateScreen(std::vector<sClient>& clients);
 void DrawFindClientScreen(vector<sClient> clients);
+void DrawLine(short length);
+void WithdrawScreen(vector<sClient>& clients);
+std::string AddSpace(short count);
+void DepositScreen(vector <sClient>& clients);
+void DrawTranscationMenu(vector<sClient>& clients);
 string ConvertClientToRecord(sClient client,string sep = "#//#") {
 	string record;
 	record += client.name + sep;
@@ -313,6 +321,198 @@ void DeleteClientAndSaveToDatabase(vector<sClient> clients) {
 		DrawMainMenu();
 	}
 }
+
+
+bool DepositMoneyToClientWithAccountNumber(vector<sClient>& clients,  double amountToDeposit,string accountNumber,sClient &client)
+{
+	for (auto& i : clients)
+	{
+		if (i.accountNumber == accountNumber) {
+			i.balance += abs(amountToDeposit) ;
+			client = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool WithdrawMoneyFromClientWithAccountNumber(vector<sClient>& clients, double amountToWithdraw, string accountNumber,sClient &client)
+{
+	
+	for (auto& i : clients)
+	{
+		if (i.accountNumber == accountNumber) {
+			if (i.balance > amountToWithdraw) {
+				i.balance -= abs(amountToWithdraw);
+				client = i;
+				return true;
+			}
+			return false;
+		}
+	}
+	return false;
+}
+
+bool WithdrawExceedBalance(sClient& client, double amountToWithdraw)
+{
+	if (amountToWithdraw > client.balance) {
+		cout << "Amount Exceeds the balance, you can Withdraw up to[" << client.balance << "]\n";
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+double GetTotalBalance(vector<sClient> clients) {
+	double totalBalance = 0;
+	for (auto& i : clients)
+	{
+		totalBalance += i.balance;
+	}
+	return totalBalance;
+}
+
+void SaveClients(vector<sClient>& clients) {
+	WriteClientsToDatabase(clients);
+}
+
+void DepositScreen(vector <sClient>& clients) {
+	DrawLine(50);
+	cout << AddSpace(15) << "Deposit Screen" << AddSpace(15)<<endl;
+	DrawLine(50);
+
+	cout << "\n\n";
+	string accountNumber;
+	double amountToDeposit = 0;
+	sClient client;
+	char sure;
+
+	do
+	{
+		cout << "Please enter AccountNumber ? ";
+		cin >> accountNumber;
+		
+	} while (!FindClientByAccountNumber(clients,accountNumber,client));
+	DrawClientInfoCard(client);
+	cout << "Please enter amount to deposit? ";
+	cin >> amountToDeposit;
+	cout << "Are you sure you want to complete this transaction? Y/N ";
+	cin >> sure;
+	if (toupper(sure) == 'Y') {
+		DepositMoneyToClientWithAccountNumber(clients, amountToDeposit, accountNumber, client);
+		SaveClients(clients);
+		cout << "Deposit done successfully and new balance is [" << client.balance << "]\n";
+		
+	}
+	cout << "Press any key to go to transcation menu... \n";
+	system("pause>0");
+	Clear();
+	DrawTranscationMenu(clients);
+}
+
+void WithdrawScreen(vector<sClient>& clients)
+{
+	DrawLine(50);
+	cout << AddSpace(15) << "Withdraw Screen" << AddSpace(15)<<endl;
+	DrawLine(50);
+
+	cout << "\n\n";
+	string accountNumber;
+	double amountToWithdraw = 0;
+	sClient client;
+	char sure;
+
+	do
+	{
+		cout << "Please enter AccountNumber ? ";
+		cin >> accountNumber;
+
+	} while (!FindClientByAccountNumber(clients, accountNumber, client));
+	DrawClientInfoCard(client);
+	
+	do
+	{
+		cout << "Please enter amount to withdraw? ";
+		cin >> amountToWithdraw;
+	} while (WithdrawExceedBalance(client, amountToWithdraw));
+
+	cout << "Are you sure you want to complete this transaction? Y/N ";
+	cin >> sure;
+	if (toupper(sure) == 'Y') {
+
+		WithdrawMoneyFromClientWithAccountNumber(clients, amountToWithdraw, accountNumber, client);
+		SaveClients(clients);
+		cout << "Withdraw done successfully and new balance is [" << client.balance << "]\n";
+
+	}
+	cout << "Press any key to go to transcation menu... \n";
+	system("pause>0");
+	Clear();
+	DrawTranscationMenu(clients);
+}
+
+
+enum TranscationOptions
+{
+	deposite = 1,
+	withdraw =2,
+	totalbalance = 3,
+	quit = 4,
+};
+
+void DrawTranscationOptions(TranscationOptions option,vector<sClient>&clients) {
+	switch (option)
+	{
+	case TranscationOptions::deposite:
+		Clear();
+		DepositScreen(clients);
+		break;
+	case TranscationOptions::withdraw:
+		Clear();
+		WithdrawScreen(clients);
+		break;
+	case TranscationOptions::totalbalance:
+		Clear();
+		ShowClientList(clients,true);
+		break;
+	case TranscationOptions::quit:
+		Clear();
+		DrawMainMenu();
+		break;
+	default:
+		Clear();
+		DrawMainMenu();
+		break;
+	}
+}
+
+void DrawTranscationMenu(vector<sClient>&clients)
+{
+	cout << "===========================================================" << endl;
+	cout << AddSpace(15) << "Transcation Menu" << AddSpace(15) << endl;
+	cout << "===========================================================" << endl;
+
+	cout << "\n\n";
+	string array[4] = {
+	"Deposit",
+	"Withdraw",
+	"Total Balance",
+	"Exit",
+	};
+	for (size_t i = 0; i < 4; i++)
+	{
+		cout << "[" << i + 1 << "]" << array[i] << "\n";
+	}
+	cout << "===========================================================" << endl;
+	cout << "Choose what do you want to do ? [1 to 4] ?";
+	short option;
+	cin >> option;
+	
+	DrawTranscationOptions((TranscationOptions)option,clients);
+}
+
 std::string AddSpace(short count) {
 	std::string space;
 	for (size_t i = 0; i < count; i++)
@@ -331,16 +531,17 @@ void DrawMainMenuOption(short index, string title)
 	cout << AddSpace(5) << "[" << index + 1 << "] " << title << "." << endl;
 }
 void DrawOptions() {
-	string options[6] = {
+	string options[7] = {
 	   "Show Client List",
 	   "Add New Client",
 	   "Delete Client",
 	   "Update Client",
 	   "Find Client",
+	   "Transcation",
 	   "Exit",
 	};
 
-	for (size_t i = 0; i < 6; i++)
+	for (size_t i = 0; i < 7; i++)
 	{
 		DrawMainMenuOption(i, options[i]);
 	}
@@ -352,7 +553,7 @@ void ShowMenus(enOptions option)
 	switch (option)
 	{
 	case Show:
-		ShowClientList(clients);
+		ShowClientList(clients,false);
 		break;
 	case Add:
 		DrawAddNewClientScreen(clients);
@@ -366,6 +567,10 @@ void ShowMenus(enOptions option)
 	case Find:
 		DrawFindClientScreen(clients);
 		break;
+	case Transction:
+		Clear();
+		DrawTranscationMenu(clients);
+		break;
 	case Exit:
 		return;
 		break;
@@ -378,7 +583,7 @@ void Clear() {
 	system("cls");
 }
 short ReadOption() {
-	std::cout << "Choose what do you want to do? [1 to 6]?";
+	std::cout << "Choose what do you want to do? [1 to 7]?";
 	short option;
 	std::cin >> option;
 	return option;
@@ -419,7 +624,7 @@ void DrawClientListHeader(short clients)
 
 }
 
-void ShowClientList(vector<sClient> clients) {
+void ShowClientList(vector<sClient> clients,bool showTotalBalance) {
 
 	Clear();
 	DrawClientListHeader(clients.size());
@@ -428,8 +633,15 @@ void ShowClientList(vector<sClient> clients) {
 		DrawClientRow(i);
 	}
 	DrawLine(100);
+	if (showTotalBalance) {
+		cout << "\n\n";
+		cout << "Total Balance Is [" << GetTotalBalance(clients)<<"]\n";
+		cout << "\n\n";
+	}
 	std::cout << "Press any key to go to main menu..." << std::endl;
 	system("pause>nul");
+	Clear();
+	if (showTotalBalance)DrawTranscationMenu(clients);
 	DrawMainMenu();
 }
 
@@ -552,6 +764,8 @@ int main() {
 	//ReadAndAddClientToClientListAndDatabase();
 	//UpdateClientAndSaveToDatabase(clients);
 	//DeleteClientAndSaveToDatabase(clients);
-	DrawMainMenu();
+	//DrawMainMenu();
+	//DepositScreen(clients);
+	DrawTranscationMenu(clients);
 	return 0;
 }
