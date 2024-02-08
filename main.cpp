@@ -764,8 +764,8 @@ int main() {
 	//ReadAndAddClientToClientListAndDatabase();
 	//UpdateClientAndSaveToDatabase(clients);
 	//DeleteClientAndSaveToDatabase(clients);
-	//DrawMainMenu();
+	DrawMainMenu();
 	//DepositScreen(clients);
-	DrawTranscationMenu(clients);
+	//DrawTranscationMenu(clients);
 	return 0;
 }
