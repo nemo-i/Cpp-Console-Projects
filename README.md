@@ -2,11 +2,28 @@
 
 This is a console bank app for managing bank clients. I used CRUD operations in C++ and I implemented everything from scratch. I learned how to convert structs to records to be stored and how to split them.
 
+
+## Preview
+
+
+https://github.com/nemo-i/Cpp-Console-Projects/assets/133984357/bf6e3bd4-43e0-41bb-8e7d-d34900d93369
+
+## Features
+  - Show all client list with their information
+  - Allow to add more clients
+  - Allow to delete clients
+  - Allow to update clients
+  - Allow to find clients
+  - Allow to make transcation :
+          - Deposit
+          - Withdraw
+          - And see all clients with total balance
+  - Finally you can exit program  
 ## What I learned
 
 - How to read from and write to files
 - How to join and split strings and work with vectors
-- How to do all CRUD operations: delete, update, add, and find
+- How to do all CRUD operations: Create, Read, Update, and Delete
 
 ## Installation
 
