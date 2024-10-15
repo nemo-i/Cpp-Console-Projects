@@ -23,6 +23,7 @@ enum enOptions {
 	Transction = 6,
 	Exit = 7,
 };
+// some edit for github
 void Clear();
 void ShowClientList(vector<sClient> clients, bool showTotalBalance);
 void DrawAddNewClientScreen(std::vector<sClient>& clients);
