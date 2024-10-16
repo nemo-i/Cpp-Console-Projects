@@ -14,6 +14,12 @@ struct  sClient
 	bool isMarkForDelete = false;
 	bool isMarkForUpdate = false;
 };
+struct sUser
+{
+	std::string username = "";
+	std::string password = "";
+	short previlage = 0;
+};
 enum enOptions {
 	Show = 1,
 	Add = 2,
@@ -69,7 +75,13 @@ sClient ConvertClientDataToClient(vector<string>clientData){
 	client.balance = stod(clientData[3]);
 	return client;
 }
-
+sUser ConvertUserDataToUser(vector<std::string> userdata) {
+	sUser user;
+	user.username = userdata[0];
+	user.password = userdata[1];
+	user.previlage = stoi(userdata[2]);
+	return user;
+}
 
 bool FindClientByAccountNumber(vector<sClient>& clients,string accountNumber ,sClient& client) {
 	for (auto& i : clients)
@@ -156,6 +168,21 @@ vector<sClient> UpdateClient(vector<sClient> &clients,sClient newClient,string f
 		file.close();
 	}
 	return clients;
+}
+vector<sUser> ReadUsersFromDatabase(std::string fileName = "Users.txt") {
+	fstream file;
+	file.open(fileName, ios::in);
+	string record;
+	vector<sUser> users;
+	while (file.is_open())
+	{
+		while (getline(file, record)) {
+			vector<std::string> userdata = SplitRecord(record);
+			sUser user = ConvertUserDataToUser(userdata);
+			users.push_back(user);
+		}
+		file.close();
+	}
 }
 
 vector<sClient> ReadClientsFromDatabase(string fileName = "Clients.txt") {
@@ -589,6 +616,50 @@ short ReadOption() {
 	std::cin >> option;
 	return option;
 }
+void DrawLoginScreenHeader() {
+	cout << "=================================" << endl;
+	cout << AddSpace(9) << "Login Screen" << AddSpace(9) << endl;
+	cout << "=================================" << endl;
+}
+sUser CheckUserInDatabase(std::vector<sUser> users,sUser loginUser) {
+	sUser emptyUser;
+	
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (users[i].username == loginUser.username && users[i].password == loginUser.password) {
+			
+			return users[i];
+		
+		}
+	}
+
+	return emptyUser;
+}
+
+sUser ReadUser() {
+	std::string username;
+	std::string password;
+	std::cout << "Enter Username?";
+	std::cin >> username;
+	std::cout << "Enter Password?";
+	std::cin >> password;
+	sUser user;
+	user.username = username;
+	user.password = password;
+	return user;
+}
+
+void DrawLoginScreen(std::vector<sUser> users) {
+	
+	DrawLoginScreenHeader();
+	sUser loginUser = ReadUser();
+	sUser user = CheckUserInDatabase(users,loginUser);
+	while (user.username.length() == 0) {
+		std::cout << "Invalid Username / Password!" << std::endl;
+		user = ReadUser();
+	}
+	
+}
 void DrawMainMenu() {
 	Clear();
 	DrawMainMenuHeader();
@@ -597,6 +668,8 @@ void DrawMainMenu() {
 	enOptions option = (enOptions)ReadOption();
 	ShowMenus(option);
 }
+
+
 std::string GenerateLine(short count)
 {
 	std::string line;
@@ -758,6 +831,7 @@ int main() {
 
 	//DeleteClient(clients);
 	clients =ReadClientsFromDatabase();
+	vector<sUser> users = ReadUsersFromDatabase();
 	//for (auto& i : clients)
 	//{
 	//	cout << i.name << endl;
@@ -765,7 +839,8 @@ int main() {
 	//ReadAndAddClientToClientListAndDatabase();
 	//UpdateClientAndSaveToDatabase(clients);
 	//DeleteClientAndSaveToDatabase(clients);
-	DrawMainMenu();
+	//DrawMainMenu();
+	DrawLoginScreen(users);
 	//DepositScreen(clients);
 	//DrawTranscationMenu(clients);
 	return 0;
