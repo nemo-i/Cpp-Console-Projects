@@ -27,8 +27,12 @@ enum enOptions {
 	Update = 4,
 	Find = 5,
 	Transction = 6,
-	Exit = 7,
+	Manage = 7,
+	Exit = 8,
 };
+
+bool admin = false;
+sUser loggedUser;
 // some edit for github
 void Clear();
 void ShowClientList(vector<sClient> clients, bool showTotalBalance);
@@ -557,28 +561,54 @@ void DrawMainMenuHeader() {
 }
 void DrawMainMenuOption(short index, string title)
 {
-	cout << AddSpace(5) << "[" << index + 1 << "] " << title << "." << endl;
+	std::cout << AddSpace(5) << "[" << index + 1 << "] " << title << "." << "\n";
 }
 void DrawOptions() {
-	string options[7] = {
+
+	std::vector<std::string> adminOptions = {
 	   "Show Client List",
 	   "Add New Client",
 	   "Delete Client",
 	   "Update Client",
 	   "Find Client",
 	   "Transcation",
-	   "Exit",
+	   "Manage Users",
+	   "Logout",
+	};
+	std::vector<std::string> regularOptions = {
+	   "Show Client List",
+	   "Add New Client",
+	   "Delete Client",
+	   "Update Client",
+	   "Find Client",
+	   "Transcation",
+	   "Logout",
 	};
 
-	for (size_t i = 0; i < 7; i++)
+	for (size_t i = 0; i < (admin ? adminOptions.size() : regularOptions.size()); i++)
 	{
-		DrawMainMenuOption(i, options[i]);
+	
+		if (!admin ) {
+			DrawMainMenuOption(i, regularOptions[i]);
+			
+		}
+
+		if(admin){
+		
+			DrawMainMenuOption(i, adminOptions[i]);
+			
+		}
+		
 	}
 }
 
-void ShowMenus(enOptions option)
+void DrawMangeUserScreen(std::vector<sUser> users){
+}
+
+void ShowMenus(enOptions option )
 {
 	vector<sClient> clients = ReadClientsFromDatabase();
+	vector<sUser> users = ReadUsersFromDatabase();
 	switch (option)
 	{
 	case Show:
@@ -600,6 +630,13 @@ void ShowMenus(enOptions option)
 		Clear();
 		DrawTranscationMenu(clients);
 		break;
+	case Manage:
+	{
+		if (admin) {
+			Clear();
+			DrawMangeUserScreen(users);
+		}
+	}
 	case Exit:
 		return;
 		break;
@@ -611,8 +648,8 @@ void ShowMenus(enOptions option)
 void Clear() {
 	system("cls");
 }
-short ReadOption() {
-	std::cout << "Choose what do you want to do? [1 to 7]?";
+short ReadOption(short index) {
+	std::cout << "Choose what do you want to do? [1 to "<<index<<"] ? ";
 	short option;
 	std::cin >> option;
 	return option;
@@ -659,7 +696,6 @@ void PrintUser(sUser user) {
 
 }
 void DrawLoginScreen(std::vector<sUser> &users) {
-	
 	DrawLoginScreenHeader();
 	sUser loginUser = ReadUser();
 	sUser user = CheckUserInDatabase(users,loginUser);
@@ -669,14 +705,20 @@ void DrawLoginScreen(std::vector<sUser> &users) {
 		std::cout << "Invalid Username / Password!" << std::endl;
 		loginUser = ReadUser();
 		user = CheckUserInDatabase(users, loginUser);
+		
 	}
+	if (user.previlage == -1) {
+		admin = true;
+	}
+	loggedUser = user;
+	DrawMainMenu();
 }
 void DrawMainMenu() {
 	Clear();
 	DrawMainMenuHeader();
 	DrawOptions();
 	cout << "=================================" << endl;
-	enOptions option = (enOptions)ReadOption();
+	enOptions option = (enOptions)ReadOption(admin?8:7);
 	ShowMenus(option);
 }
 
