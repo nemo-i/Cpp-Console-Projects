@@ -183,6 +183,7 @@ vector<sUser> ReadUsersFromDatabase(std::string fileName = "Users.txt") {
 		}
 		file.close();
 	}
+	return users;
 }
 
 vector<sClient> ReadClientsFromDatabase(string fileName = "Clients.txt") {
@@ -627,6 +628,7 @@ sUser CheckUserInDatabase(std::vector<sUser> users,sUser loginUser) {
 	for (size_t i = 0; i < users.size(); i++)
 	{
 		if (users[i].username == loginUser.username && users[i].password == loginUser.password) {
+		//	std::cout << "Found User";
 			
 			return users[i];
 		
@@ -649,16 +651,25 @@ sUser ReadUser() {
 	return user;
 }
 
-void DrawLoginScreen(std::vector<sUser> users) {
+
+void PrintUser(sUser user) {
+	std::cout << "Username: " << user.username<<std::endl;
+	std::cout << "passowrd: " << user.password << std::endl;
+	std::cout << "previlage: " << user.previlage << std::endl;
+
+}
+void DrawLoginScreen(std::vector<sUser> &users) {
 	
 	DrawLoginScreenHeader();
 	sUser loginUser = ReadUser();
 	sUser user = CheckUserInDatabase(users,loginUser);
 	while (user.username.length() == 0) {
+		Clear();
+		DrawLoginScreenHeader();
 		std::cout << "Invalid Username / Password!" << std::endl;
-		user = ReadUser();
+		loginUser = ReadUser();
+		user = CheckUserInDatabase(users, loginUser);
 	}
-	
 }
 void DrawMainMenu() {
 	Clear();
@@ -832,6 +843,7 @@ int main() {
 	//DeleteClient(clients);
 	clients =ReadClientsFromDatabase();
 	vector<sUser> users = ReadUsersFromDatabase();
+	std::cout << users.size();
 	//for (auto& i : clients)
 	//{
 	//	cout << i.name << endl;
