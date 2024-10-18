@@ -5,48 +5,12 @@ using namespace std;
 #include <fstream>
 #include <iomanip>
 #include <math.h>
-struct  sClient
-{
-	string name;
-	string accountNumber;
-	string pincode;
-	double balance;
-	bool isMarkForDelete = false;
-	bool isMarkForUpdate = false;
-};
-struct sUser
-{
-	std::string username = "";
-	std::string password = "";
-	short previlage = 0;
-};
-enum enOptions {
-	Show = 1,
-	Add = 2,
-	Delete = 3,
-	Update = 4,
-	Find = 5,
-	Transction = 6,
-	Manage = 7,
-	Exit = 8,
-};
+#include "function.h"
 
 bool admin = false;
 sUser loggedUser;
 // some edit for github
-void Clear();
-void ShowClientList(vector<sClient> clients, bool showTotalBalance);
-void DrawAddNewClientScreen(std::vector<sClient>& clients);
-void DrawClientInfoCard(sClient& client);
-void DrawClientDeleteScreen(std::vector<sClient>& clients);
-void DrawMainMenu();
-void DrawClientUpdateScreen(std::vector<sClient>& clients);
-void DrawFindClientScreen(vector<sClient> clients);
-void DrawLine(short length);
-void WithdrawScreen(vector<sClient>& clients);
-std::string AddSpace(short count);
-void DepositScreen(vector <sClient>& clients);
-void DrawTranscationMenu(vector<sClient>& clients);
+// replaced by header
 string ConvertClientToRecord(sClient client,string sep = "#//#") {
 	string record;
 	record += client.name + sep;
@@ -55,7 +19,6 @@ string ConvertClientToRecord(sClient client,string sep = "#//#") {
 	record += to_string(client.balance) + sep;
 	return record;
 }
-
 
 vector<string> SplitRecord(string record,string sep = "#//#") {
 	vector<string> clientData;
@@ -487,13 +450,7 @@ void WithdrawScreen(vector<sClient>& clients)
 }
 
 
-enum TranscationOptions
-{
-	deposite = 1,
-	withdraw =2,
-	totalbalance = 3,
-	quit = 4,
-};
+
 
 void DrawTranscationOptions(TranscationOptions option,vector<sClient>&clients) {
 	switch (option)
@@ -601,8 +558,74 @@ void DrawOptions() {
 		
 	}
 }
+void DrawManageUsersScreenHeader() {
+	cout << "=================================" << endl;
+	cout << AddSpace(9) << "Manage Users Menu Screen" << AddSpace(9) << endl;
+	cout << "=================================" << endl;
+	
+}
+enManagerOptions DrawMangeUserScreen(std::vector<sUser> &users){
+	DrawManageUsersScreenHeader();
+	
+	short option;
+	std::vector<std::string> options = {
+	"List Users",
+	"Add New User",
+	"Update User",
+	"Delete User",
+	"Find User",
+	"Main Menu",
+	};
+	for (size_t i = 0; i < options.size(); i++)
+	{
+		std::cout << AddSpace(5) << " [ " << i + 1 << " ] " << options[i] << ".\n";
+	}
 
-void DrawMangeUserScreen(std::vector<sUser> users){
+	cout << "=================================" << endl;
+	std::cout << "Choose what do you want to do ? [ " << 1 << " to " << options.size() << " ] ? ";
+	cin >> option;
+	while (option<1 || option>options.size())
+	{
+		std::cout << "Wrong Options ! Choose what do you want to do ? [ " << 1 << " to " << options.size() << " ] ? ";
+		cin >> option;
+	}
+
+	return (enManagerOptions)option;
+}
+
+void DrawUserListScreenHeader(std::vector<sUser>& users)
+{
+	std::cout << AddSpace(15) << "Users List ( " << users.size() << " ) " << "User(s)." << AddSpace(15)<<std::endl;
+	DrawLine(50);
+}
+
+
+
+void DrawUserListScreen(std::vector<sUser>& users)
+{
+	const std::string reset = "\033[0m";
+
+	const std::string green = "\033[32m";
+	DrawUserListScreenHeader(users);
+	std::cout << "| " << green<<left << setw(15) << "Username" <<reset
+		<< "| " << left << setw(15) << "Password"
+		<< "| " << left << setw(15) << "Permissions"  << std::endl;
+	DrawLine(50);
+
+	for (auto& i : users)
+	{
+		std::cout << "| " << left << setw(15) << i.username
+			<< "| " << left << setw(15) << i.password
+			<< "| " << left << setw(15) << to_string(i.previlage) << std::endl;
+		DrawLine(50);
+	}
+
+	//std::cout << "\n\n";
+	cout << "Press any key to go to transcation menu... \n";
+	system("pause>0");
+	Clear();
+	DrawMangeUserScreen(users);
+
 }
 
 void ShowMenus(enOptions option )
@@ -638,6 +661,9 @@ void ShowMenus(enOptions option )
 		}
 	}
 	case Exit:
+		admin = false;
+		Clear();
+		DrawLoginScreen(users);
 		return;
 		break;
 	default:
@@ -877,25 +903,10 @@ int main() {
 		true,
 		false,
 	};
-
 	vector<sClient> clients = {client1,newClient};
-	//WriteClientsToDatabase(clients);
-	//UpdateClient(clients,newClient);
-
-	//DeleteClient(clients);
 	clients =ReadClientsFromDatabase();
 	vector<sUser> users = ReadUsersFromDatabase();
-	std::cout << users.size();
-	//for (auto& i : clients)
-	//{
-	//	cout << i.name << endl;
-	//}
-	//ReadAndAddClientToClientListAndDatabase();
-	//UpdateClientAndSaveToDatabase(clients);
-	//DeleteClientAndSaveToDatabase(clients);
-	//DrawMainMenu();
-	DrawLoginScreen(users);
-	//DepositScreen(clients);
-	//DrawTranscationMenu(clients);
+	//DrawLoginScreen(users);
+	DrawUserListScreen(users);
 	return 0;
 }
