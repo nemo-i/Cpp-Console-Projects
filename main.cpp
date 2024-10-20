@@ -590,66 +590,43 @@ void ShowManageOptions(std::vector<sUser>& users, enManagerOptions option) {
 	{
 	case ListUsers:
 	{
-		if (loggedUser.previlage & 1) {
+		
 			Clear();
 			DrawUserListScreen(users);
-		}
-		else
-		{
-			Clear();
-			DrawAccessDeniedScreen(users);
-		}
+		
+	
+		
 	}
 		break;
 	case AddUser:
 	{
-		if (loggedUser.previlage & 2) {
+		
 			Clear();
 			DrawAddUserScreen(users);
-		}
-		else
-		{
-			Clear();
-			DrawAccessDeniedScreen(users);
-		}
+		
 	}
 		break;
 	case UpdateUser:
-		if (loggedUser.previlage & 4) {
+	
 			Clear();
 			DrawUpadateUsersScreen(users);
-		}
-		else
-		{
-			Clear();
-			DrawAccessDeniedScreen(users);
-		}
+		
 		break;
 	case DeleteUser:
 	{
-		if (loggedUser.previlage & 8) {
+		
 			Clear();
 			DrawDeleteUserScreen(users);
-		}
-		else
-		{
-			Clear();
-			DrawAccessDeniedScreen(users);
-		}
+		
 	}
 		break;
 	
 	case FindUser:
 	{
-		if (loggedUser.previlage & 16) {
+		
 			Clear();
 			DrawFindUserScreen(users);
-		}
-		else
-		{
-			Clear();
-			DrawAccessDeniedScreen(users);
-		}
+		
 	}
 		break;
 	case MainMenu:
@@ -670,13 +647,57 @@ void DrawAccessDeniedScreen(std::vector<sUser>& users)
 	cout << "Press any key to go to user manage menu... \n";
 	system("pause>0");
 	Clear();
-	DrawMangeUserScreen(users);
+	DrawMainMenu();
+	
 }
+
 void DrawDeleteUserScreen(std::vector<sUser>& users)
 {
+	std::string username;
 	cout << "=================================" << endl;
 	cout << AddSpace(9) << "Delete User Screen" << AddSpace(9) << endl;
 	cout << "=================================" << endl;
+	std::cout << "Please Enter Username? ";
+	cin >> username;
+	std::cout << "\n\n";
+	if (IsUserExitsInDatabase(users,username))
+	{
+		std::cout << "The Following are the user details:\n";
+		DrawLine(50);
+		sUser user = RetriveUserFromDatabase(users,username);
+		std::cout << "Username      : " << user.username<<"\n";
+		std::cout << "Password      : " << user.password << "\n";
+		std::cout << "Permissions   : " << user.previlage << "\n";
+		DrawLine(50);
+		std::cout << "\n\n";
+		std::cout << "Are you sure ! do you want to delete this user y/n?";
+		char y;
+		cin >> y;
+		if (tolower(y) == 'y' && user.previlage != -1) {
+			MarkUserForDeletion(users,user);
+			DeleteUserFromDatabase(users);
+			WriteUsersToDatabase(users);
+			std::cout << "User deleted !\n";
+		}
+		else
+		{
+			std::cout<<"Can't Not Delete This User Because He Is Admin\n";
+		}
+		
+	
+
+	}
+	else
+	{
+		std::cout << "User with username(" << username << ") is not found!\n";
+	}
+	
+	std::cout << "Press any key to go back\n";
+	system("pause>0");
+	Clear();
+	DrawMangeUserScreen(users);
+
+
 
 // todo:Add Code Here;
 	cout << "Press any key to go to user manage menu... \n";
@@ -689,11 +710,15 @@ void DrawUpadateUsersScreen(std::vector<sUser>& users)
 	cout << "=================================" << endl;
 	cout << AddSpace(9) << "Update User Screen" << AddSpace(9) << endl;
 	cout << "=================================" << endl;
-	// todo:Add Code Here;
-	cout << "Press any key to go to user manage menu... \n";
-	system("pause>0");
+	EditUser(users);
+	char moreUsers;
+	std::cin >> moreUsers;
+	while (tolower(moreUsers) == 'y') {
+		EditUser(users);
+	}
 	Clear();
 	DrawMangeUserScreen(users);
+	
 
 }
 void DrawFindUserScreen(std::vector<sUser>& users)
@@ -701,13 +726,80 @@ void DrawFindUserScreen(std::vector<sUser>& users)
 	cout << "=================================" << endl;
 	cout << AddSpace(9) << "Find User Screen" << AddSpace(9) << endl;
 	cout << "=================================" << endl;
-	// todo:Add Code Here;
+	std::cout << "Please Enter Username? ";
+	std::string username;
+	cin >> username;
+	std::cout << "\n\n";
+	if (IsUserExitsInDatabase(users, username))
+	{
+		std::cout << "The Following are the user details:\n";
+		DrawLine(50);
+		sUser user = RetriveUserFromDatabase(users, username);
+		std::cout << "Username      : " << user.username << "\n";
+		std::cout << "Password      : " << user.password << "\n";
+		std::cout << "Permissions   : " << user.previlage << "\n";
+		DrawLine(50);
+		std::cout << "\n\n";
+	}
+	else
+	{
+		std::cout << "User with username(" << username << ") is not found!\n";
+	}
 	cout << "Press any key to go to user manage menu... \n";
 	system("pause>0");
 	Clear();
 	DrawMangeUserScreen(users);
 
 }
+bool IsUserExitsInDatabase(std::vector<sUser>& users, std::string username)
+{
+	for (auto& i : users)
+	{
+		if (username == i.username) {
+			return true;
+			break;
+		}
+	}
+	return false;
+}
+
+sUser RetriveUserFromDatabase(std::vector<sUser>& users, std::string username)
+{
+	for (auto& i : users)
+	{
+		if (username == i.username) {
+			return i;
+			break;
+		}
+	}
+	return sUser();
+}
+
+void DeleteUserFromDatabase(std::vector<sUser>& users)
+{
+	std::vector<sUser> edittedUsers = {};
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (users[i].isMarkForDelete == false) {
+			edittedUsers.push_back(users[i]);
+		}
+	}
+	users = edittedUsers;
+}
+
+void MarkUserForDeletion(std::vector<sUser>& users, sUser user)
+{
+	for (auto& i : users)
+	{
+		if (i.username == user.username) {
+			i.isMarkForDelete = true;
+			break;
+		};
+		
+	}
+}
+
+
 enManagerOptions DrawMangeUserScreen(std::vector<sUser> &users){
 	DrawManageUsersScreenHeader();
 	
@@ -786,29 +878,147 @@ void DrawAddUserScreen(std::vector<sUser>& users)
 	while (tolower(moreUsers) == 'y') {
 		AddNewUser(users);
 	}
+	Clear();
 	DrawMangeUserScreen(users);
 
 }
-
+void EditUser(std::vector<sUser>& users) {
+	sUser editedUser;
+	std::cout << "Edit User:\n";
+	std::cout << "Enter username? ";
+	std::cin >> editedUser.username;
+	while (!IsUserExitsInDatabase(users, editedUser.username))
+	{
+		std::cout << "User not found\n";
+		std::cout << "Enter username? ";
+		std::cin >> editedUser.username;
+	}
+	editedUser = RetriveUserFromDatabase(users,editedUser.username);
+	MarkUserForDeletion(users,editedUser);
+	DeleteUserFromDatabase(users);
+	std::cout << "Start Editing User\n\n";
+	std::cout << "Enter password? ";
+	std::cin >> editedUser.password;
+	std::cout << "\n";
+	std::cout << "Do you want to give full access? y/n ";
+	char fullAccess;
+	std::cin >> fullAccess;
+	char option;
+	if (tolower(fullAccess) == 'y') {
+		editedUser.previlage = -1;
+	}
+	else
+	{
+		editedUser.previlage = 0;
+		std::cout << "Do you want to give access to :\n";
+		std::cout << "Show Client List? y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 1;
+		}
+		std::cout << "Add New Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 2;
+		}
+		std::cout << "Delete Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 4;
+		}
+		std::cout << "Update Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 8;
+		}
+		std::cout << "Find Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 16;
+		}
+		std::cout << "Transaction y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 32;
+		}
+		std::cout << "Manage Users y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			editedUser.previlage = editedUser.previlage | 64;
+		}
+	}
+	
+	users.push_back(editedUser);
+	WriteUsersToDatabase(users);
+	std::cout << "\n";
+	std::cout << "User Edited Successfully, do you want to edit more users Y/N?";
+}
 void AddNewUser(std::vector<sUser>& users)
 {
 	sUser newUser;
 	std::cout << "Adding New User:\n";
 	std::cout << "Enter username? ";
 	std::cin >> newUser.username;
+	while (IsUserExitsInDatabase(users,newUser.username))
+	{
+		std::cout << "Choose Another Username\n";
+		std::cout << "Enter username? ";
+		std::cin >> newUser.username;
+	}
 	std::cout << "Enter password? ";
 	std::cin >> newUser.password;
 	std::cout << "\n";
 	std::cout << "Do you want to give full access? y/n ";
 	char fullAccess;
 	std::cin >> fullAccess;
+	char option;
 	if (tolower(fullAccess) == 'y') {
 		newUser.previlage = -1;
+	}
+	else
+	{
+		std::cout << "Do you want to give access to :\n";
+		std::cout << "Show Client List? y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 1;
+		}
+		std::cout << "Add New Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 2;
+		}
+		std::cout << "Delete Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 4;
+		}
+		std::cout << "Update Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 8;
+		}
+		std::cout << "Find Client y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 16;
+		}
+		std::cout << "Transaction y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 32;
+		}
+		std::cout << "Manage Users y/n?";
+		cin >> option;
+		if (tolower(option) == 'y') {
+			newUser.previlage = newUser.previlage | 64;
+		}
 	}
 	users.push_back(newUser);
 	WriteUsersToDatabase(users);
 	std::cout << "\n";
 	std::cout << "User Added Successfully, do you want to add more users Y/N?";
+	//Clear();
 }
 
 
@@ -819,29 +1029,93 @@ void ShowMenus(enOptions option )
 	switch (option)
 	{
 	case Show:
-		ShowClientList(clients,false);
+	{
+		if (loggedUser.previlage & 1) {
+			ShowClientList(clients, false);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+			
+		}
+	}
+		
 		break;
 	case Add:
-		DrawAddNewClientScreen(clients);
+	{
+		if (loggedUser.previlage & 2) {
+			DrawAddNewClientScreen(clients);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
 		break;
 	case Delete:
-		DrawClientDeleteScreen(clients);
+	{
+		if (loggedUser.previlage & 4) {
+			DrawClientDeleteScreen(clients);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
+		
 		break;
 	case Update:
-		DrawClientUpdateScreen(clients);
+	{
+		if (loggedUser.previlage & 8) {
+			DrawClientUpdateScreen(clients);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
+		
 		break;
 	case Find:
-		DrawFindClientScreen(clients);
+		if (loggedUser.previlage & 16) {
+			DrawFindClientScreen(clients);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+		
 		break;
 	case Transction:
-		Clear();
-		DrawTranscationMenu(clients);
+		if (loggedUser.previlage & 32) {
+			Clear();
+			DrawTranscationMenu(clients);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+		
 		break;
 	case Manage:
 	{
 		
+		if (loggedUser.previlage & 64) {
 			Clear();
 			DrawMangeUserScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+			
 		
 	}
 	case Exit:

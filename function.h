@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 const std::string reset = "\033[0m";
-
+using namespace std;
 const std::string green = "\033[32m";
 const std::string red = "\033[91m";
 struct  sClient
@@ -75,3 +75,8 @@ void DrawAccessDeniedScreen(std::vector<sUser> &users);
 void DrawDeleteUserScreen(std::vector<sUser>& users);
 void DrawUpadateUsersScreen(std::vector<sUser>& users);
 void DrawFindUserScreen(std::vector<sUser> &users);
+bool IsUserExitsInDatabase(std::vector<sUser> &users,std::string username);
+sUser RetriveUserFromDatabase(std::vector<sUser>& users, std::string username);
+void DeleteUserFromDatabase(std::vector<sUser>& users);
+void MarkUserForDeletion(std::vector<sUser>& users, sUser user);
+void EditUser(std::vector<sUser>& users);
