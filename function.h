@@ -1,6 +1,10 @@
 #pragma once
 #include <vector>
 #include <string>
+const std::string reset = "\033[0m";
+
+const std::string green = "\033[32m";
+const std::string red = "\033[91m";
 struct  sClient
 {
 	std::string name;
@@ -32,8 +36,8 @@ enum enOptions {
 enum enManagerOptions {
 	ListUsers = 1,
 	AddUser = 2,
-	DeleteUser = 3,
-	UpdateUser = 4,
+	DeleteUser = 4,
+	UpdateUser = 3,
 	FindUser = 5,
 	MainMenu = 6,
 };
@@ -62,3 +66,12 @@ void DrawManageUsersScreenHeader();
 enManagerOptions DrawMangeUserScreen(std::vector<sUser> &users);
 void DrawUserListScreenHeader(std::vector<sUser> &users);
 void DrawUserListScreen(std::vector<sUser>& users);
+void DrawAddUserScreen(std::vector<sUser>& users);
+void AddNewUser(std::vector<sUser>& users);
+void WriteUsersToDatabase(std::vector<sUser>& users, std::string fileName);
+std::string ConvertUserToRecord(sUser& user, std::string sep );
+void ShowManageOptions(std::vector<sUser>& users, enManagerOptions option);
+void DrawAccessDeniedScreen(std::vector<sUser> &users);
+void DrawDeleteUserScreen(std::vector<sUser>& users);
+void DrawUpadateUsersScreen(std::vector<sUser>& users);
+void DrawFindUserScreen(std::vector<sUser> &users);

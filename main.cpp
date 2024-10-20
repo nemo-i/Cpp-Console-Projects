@@ -19,7 +19,13 @@ string ConvertClientToRecord(sClient client,string sep = "#//#") {
 	record += to_string(client.balance) + sep;
 	return record;
 }
-
+std::string ConvertUserToRecord(sUser& user,string sep = "#//#") {
+	string record;
+	record += user.username + sep;
+	record += user.password + sep;
+	record += to_string( user.previlage) + sep;
+	return record;
+}
 vector<string> SplitRecord(string record,string sep = "#//#") {
 	vector<string> clientData;
 	
@@ -187,7 +193,19 @@ void WriteClientsToDatabase(vector<sClient>& clients, string fileName = "Clients
 		file.close();
 	}
 }
+void WriteUsersToDatabase(std::vector<sUser>& users, std::string fileName = "Users.txt") {
+	fstream file;
+	file.open(fileName, ios::out);
+	while (file.is_open())
+	{
+		for (auto& i : users) {
+			string record = ConvertUserToRecord(i);
+			file << record << std::endl;
 
+		}
+		file.close();
+	}
+}
 void WriteClientToDatabase(sClient& client, string fileName = "Clients.txt") {
 	fstream file;
 	file.open(fileName, ios::out|ios::app);
@@ -542,19 +560,19 @@ void DrawOptions() {
 	   "Logout",
 	};
 
-	for (size_t i = 0; i < (admin ? adminOptions.size() : regularOptions.size()); i++)
+	for (size_t i = 0; i <adminOptions.size(); i++)
 	{
 	
-		if (!admin ) {
+		/*if (!admin ) {
 			DrawMainMenuOption(i, regularOptions[i]);
 			
 		}
 
-		if(admin){
+		if(admin){*/
 		
 			DrawMainMenuOption(i, adminOptions[i]);
 			
-		}
+		/*}*/
 		
 	}
 }
@@ -563,6 +581,131 @@ void DrawManageUsersScreenHeader() {
 	cout << AddSpace(9) << "Manage Users Menu Screen" << AddSpace(9) << endl;
 	cout << "=================================" << endl;
 	
+}
+
+
+
+void ShowManageOptions(std::vector<sUser>& users, enManagerOptions option) {
+	switch (option)
+	{
+	case ListUsers:
+	{
+		if (loggedUser.previlage & 1) {
+			Clear();
+			DrawUserListScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
+		break;
+	case AddUser:
+	{
+		if (loggedUser.previlage & 2) {
+			Clear();
+			DrawAddUserScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
+		break;
+	case DeleteUser:
+	{
+		if (loggedUser.previlage & 4) {
+			Clear();
+			DrawDeleteUserScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
+		break;
+	case UpdateUser:
+		if (loggedUser.previlage & 8) {
+			Clear();
+			DrawUpadateUsersScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+		break;
+	case FindUser:
+	{
+		if (loggedUser.previlage & 16) {
+			Clear();
+			DrawFindUserScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+	}
+		break;
+	case MainMenu:
+		Clear();
+		DrawMainMenu();
+		break;
+	default:
+		break;
+	}
+}
+void DrawAccessDeniedScreen(std::vector<sUser>& users)
+{
+	cout << red<<"=================================" << reset<<endl;
+	cout << AddSpace(9) << "Access Denied Screen" << AddSpace(9) << endl;
+	cout << red << "=================================" <<reset <<endl;
+
+	cout << red <<  "Access Denied Cotact Your Manager !" << reset<< endl;
+	cout<<"Press any key to return to manage user screen !" << endl;
+	system("pause>0");
+	Clear();
+	DrawMangeUserScreen(users);
+}
+void DrawDeleteUserScreen(std::vector<sUser>& users)
+{
+	cout << "=================================" << endl;
+	cout << AddSpace(9) << "Delete User Screen" << AddSpace(9) << endl;
+	cout << "=================================" << endl;
+
+// todo:Add Code Here;
+	cout << "Press key to go back" << endl;
+	system("pause>0");
+	Clear();
+	DrawMangeUserScreen(users);
+}
+void DrawUpadateUsersScreen(std::vector<sUser>& users)
+{
+	cout << "=================================" << endl;
+	cout << AddSpace(9) << "Update User Screen" << AddSpace(9) << endl;
+	cout << "=================================" << endl;
+	// todo:Add Code Here;
+	cout << "Press key to go back" << endl;
+	system("pause>0");
+	Clear();
+	DrawMangeUserScreen(users);
+
+}
+void DrawFindUserScreen(std::vector<sUser>& users)
+{
+	cout << "=================================" << endl;
+	cout << AddSpace(9) << "Find User Screen" << AddSpace(9) << endl;
+	cout << "=================================" << endl;
+	// todo:Add Code Here;
+	cout << "Press key to go back" << endl;
+	system("pause>0");
+	Clear();
+	DrawMangeUserScreen(users);
+
 }
 enManagerOptions DrawMangeUserScreen(std::vector<sUser> &users){
 	DrawManageUsersScreenHeader();
@@ -589,9 +732,10 @@ enManagerOptions DrawMangeUserScreen(std::vector<sUser> &users){
 		std::cout << "Wrong Options ! Choose what do you want to do ? [ " << 1 << " to " << options.size() << " ] ? ";
 		cin >> option;
 	}
-
+	ShowManageOptions(users,(enManagerOptions)option);
 	return (enManagerOptions)option;
 }
+
 
 void DrawUserListScreenHeader(std::vector<sUser>& users)
 {
@@ -628,6 +772,45 @@ void DrawUserListScreen(std::vector<sUser>& users)
 
 }
 
+
+
+void DrawAddUserScreen(std::vector<sUser>& users)
+{
+	DrawLine(50);
+	std::cout << AddSpace(15) << "Add New User Screen" << AddSpace(15) << std::endl;
+	DrawLine(50);
+	AddNewUser(users);
+	char moreUsers;
+	std::cin >> moreUsers;
+	while (tolower(moreUsers) == 'y') {
+		AddNewUser(users);
+	}
+	DrawMangeUserScreen(users);
+
+}
+
+void AddNewUser(std::vector<sUser>& users)
+{
+	sUser newUser;
+	std::cout << "Adding New User:\n";
+	std::cout << "Enter username? ";
+	std::cin >> newUser.username;
+	std::cout << "Enter password? ";
+	std::cin >> newUser.password;
+	std::cout << "\n";
+	std::cout << "Do you want to give full access? y/n ";
+	char fullAccess;
+	std::cin >> fullAccess;
+	if (tolower(fullAccess) == 'y') {
+		newUser.previlage = -1;
+	}
+	users.push_back(newUser);
+	WriteUsersToDatabase(users);
+	std::cout << "\n";
+	std::cout << "User Added Successfully, do you want to add more users Y/N?";
+}
+
+
 void ShowMenus(enOptions option )
 {
 	vector<sClient> clients = ReadClientsFromDatabase();
@@ -655,10 +838,10 @@ void ShowMenus(enOptions option )
 		break;
 	case Manage:
 	{
-		if (admin) {
+		
 			Clear();
 			DrawMangeUserScreen(users);
-		}
+		
 	}
 	case Exit:
 		admin = false;
@@ -907,6 +1090,8 @@ int main() {
 	clients =ReadClientsFromDatabase();
 	vector<sUser> users = ReadUsersFromDatabase();
 	//DrawLoginScreen(users);
-	DrawUserListScreen(users);
+	//DrawUserListScreen(users);
+	DrawLoginScreen(users);
+	//DrawAddUserScreen(users);
 	return 0;
 }
