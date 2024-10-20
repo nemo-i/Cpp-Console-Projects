@@ -36,8 +36,8 @@ enum enOptions {
 enum enManagerOptions {
 	ListUsers = 1,
 	AddUser = 2,
-	DeleteUser = 4,
 	UpdateUser = 3,
+	DeleteUser = 4,
 	FindUser = 5,
 	MainMenu = 6,
 };

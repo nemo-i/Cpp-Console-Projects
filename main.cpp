@@ -614,9 +614,20 @@ void ShowManageOptions(std::vector<sUser>& users, enManagerOptions option) {
 		}
 	}
 		break;
+	case UpdateUser:
+		if (loggedUser.previlage & 4) {
+			Clear();
+			DrawUpadateUsersScreen(users);
+		}
+		else
+		{
+			Clear();
+			DrawAccessDeniedScreen(users);
+		}
+		break;
 	case DeleteUser:
 	{
-		if (loggedUser.previlage & 4) {
+		if (loggedUser.previlage & 8) {
 			Clear();
 			DrawDeleteUserScreen(users);
 		}
@@ -627,17 +638,7 @@ void ShowManageOptions(std::vector<sUser>& users, enManagerOptions option) {
 		}
 	}
 		break;
-	case UpdateUser:
-		if (loggedUser.previlage & 8) {
-			Clear();
-			DrawUpadateUsersScreen(users);
-		}
-		else
-		{
-			Clear();
-			DrawAccessDeniedScreen(users);
-		}
-		break;
+	
 	case FindUser:
 	{
 		if (loggedUser.previlage & 16) {
@@ -666,7 +667,7 @@ void DrawAccessDeniedScreen(std::vector<sUser>& users)
 	cout << red << "=================================" <<reset <<endl;
 
 	cout << red <<  "Access Denied Cotact Your Manager !" << reset<< endl;
-	cout<<"Press any key to return to manage user screen !" << endl;
+	cout << "Press any key to go to user manage menu... \n";
 	system("pause>0");
 	Clear();
 	DrawMangeUserScreen(users);
@@ -678,7 +679,7 @@ void DrawDeleteUserScreen(std::vector<sUser>& users)
 	cout << "=================================" << endl;
 
 // todo:Add Code Here;
-	cout << "Press key to go back" << endl;
+	cout << "Press any key to go to user manage menu... \n";
 	system("pause>0");
 	Clear();
 	DrawMangeUserScreen(users);
@@ -689,7 +690,7 @@ void DrawUpadateUsersScreen(std::vector<sUser>& users)
 	cout << AddSpace(9) << "Update User Screen" << AddSpace(9) << endl;
 	cout << "=================================" << endl;
 	// todo:Add Code Here;
-	cout << "Press key to go back" << endl;
+	cout << "Press any key to go to user manage menu... \n";
 	system("pause>0");
 	Clear();
 	DrawMangeUserScreen(users);
@@ -701,7 +702,7 @@ void DrawFindUserScreen(std::vector<sUser>& users)
 	cout << AddSpace(9) << "Find User Screen" << AddSpace(9) << endl;
 	cout << "=================================" << endl;
 	// todo:Add Code Here;
-	cout << "Press key to go back" << endl;
+	cout << "Press any key to go to user manage menu... \n";
 	system("pause>0");
 	Clear();
 	DrawMangeUserScreen(users);
